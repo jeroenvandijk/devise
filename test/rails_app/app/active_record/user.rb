@@ -6,3 +6,15 @@ class User < ActiveRecord::Base
 
   attr_accessible :username, :email, :password, :password_confirmation, :remember_me
 end
+
+class UserWithLogin < User
+  include Shim
+  include SharedUser
+
+  attr_accessible :login
+  
+  def self.find_for_database_authentication(conditions)
+    key = (conditions[:login] || '').include?('@') ? :email : :username
+    where({ key => conditions[:login] }).first
+  end
+end

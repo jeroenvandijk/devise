@@ -95,4 +95,12 @@ class DatabaseAuthenticatableTest < ActiveSupport::TestCase
     assert user.password.blank?
     assert user.password_confirmation.blank?
   end
+  
+  test 'should use the method #find_for_database_authentication for sending password instructions' do
+    swap Devise, :authentication_keys => [:login], :reset_password_keys => [:login] do
+      user = UserWithLogin.create!(:email => "myemail@domain.com", :username => 'myname', :password => '123456', :password_confirmation => '123456')
+      assert_equal user, UserWithLogin.send_reset_password_instructions(:login => "myname")
+    end
+  end
+  
 end
